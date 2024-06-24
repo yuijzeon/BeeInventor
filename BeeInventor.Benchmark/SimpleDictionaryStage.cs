@@ -6,27 +6,29 @@ namespace BeeInventor.Benchmark;
 public class SimpleDictionaryStage
 {
     private const int Size = 10000;
-    private readonly SimpleDictionaryImpl _dictionary;
     private readonly List<string> _list;
-    private readonly List<string> _words;
+    private readonly SimpleDictionaryImpl _simpleDictionary;
+    private readonly WildCardDictionaryImpl _wildCardDictionary;
+    private readonly List<string> _inputs;
 
     public SimpleDictionaryStage()
     {
-        _words = new List<string>();
+        _inputs = new List<string>();
 
         for (var i = 0; i < Size; i++)
         {
-            _words.Add(Guid.NewGuid().ToString());
+            _inputs.Add(Guid.NewGuid().ToString());
         }
 
-        _dictionary = new SimpleDictionaryImpl(_words);
-        _list = new List<string>(_words);
+        _simpleDictionary = new SimpleDictionaryImpl(_inputs);
+        _wildCardDictionary = new WildCardDictionaryImpl(_inputs);
+        _list = new List<string>(_inputs);
     }
 
     [Benchmark]
     public void find_word_in_list()
     {
-        foreach (var word in _words)
+        foreach (var word in _inputs)
         {
             var _ = _list.Contains(word);
         }
@@ -41,15 +43,30 @@ public class SimpleDictionaryStage
     [Benchmark]
     public void find_word_in_simple_dictionary()
     {
-        foreach (var word in _words)
+        foreach (var word in _inputs)
         {
-            var _ = _dictionary.IsInDict(word);
+            var _ = _simpleDictionary.IsInDict(word);
         }
 
         for (var i = 0; i < Size; i++)
         {
             var word = Guid.NewGuid().ToString();
-            var _ = _dictionary.IsInDict(word);
+            var _ = _simpleDictionary.IsInDict(word);
+        }
+    }
+
+    [Benchmark]
+    public void find_word_in_simple_dictionary_with_wild_card()
+    {
+        foreach (var word in _inputs)
+        {
+            var _ = _wildCardDictionary.IsInDict(word);
+        }
+
+        for (var i = 0; i < Size; i++)
+        {
+            var word = Guid.NewGuid().ToString();
+            var _ = _wildCardDictionary.IsInDict(word);
         }
     }
 }
